@@ -1,35 +1,77 @@
 class FrontMiddleBackQueue {
-    LinkedList<Integer> list;
+    Deque<Integer> left;
+    Deque<Integer> right;
 
     public FrontMiddleBackQueue() {
-        list = new LinkedList();
+        left = new ArrayDeque<>();
+        right = new ArrayDeque<>();
+    }
+
+    private void balance() {
+        if (left.size() > right.size() + 1) {
+            right.addFirst(left.removeLast());
+        } else if (left.size() < right.size()) {
+            left.addLast(right.removeFirst());
+        }
     }
 
     public void pushFront(int val) {
-        list.addFirst(val);
+        left.addFirst(val);
+        balance();
     }
 
     public void pushMiddle(int val) {
-        list.add(list.size() / 2, val);
+        if (left.size() > right.size())
+            right.addFirst(left.removeLast());
+
+        left.addLast(val);
+        balance();
     }
 
     public void pushBack(int val) {
-        list.addLast(val);
+        right.addLast(val);
+        balance();
     }
 
     public int popFront() {
-        return list.isEmpty() ? -1 : list.removeFirst();
+        if (left.isEmpty() && right.isEmpty())
+            return -1;
+
+        int val;
+        if (!left.isEmpty()) {
+            val = left.removeFirst();
+        } else {
+            val = right.removeFirst();
+        }
+
+        balance();
+        return val;
     }
 
     public int popMiddle() {
-        if (list.isEmpty())
+        if (left.isEmpty() && right.isEmpty()) {
             return -1;
+        }
 
-        return list.remove((list.size() - 1) / 2);
+        int val = left.removeLast();
+        balance();
+        return val;
     }
 
     public int popBack() {
-        return list.isEmpty() ? -1 : list.removeLast();
+        if (left.isEmpty() && right.isEmpty()) {
+            return -1;
+        }
+
+        int val;
+        if (!right.isEmpty()) {
+            val = right.removeLast();
+        } else {
+            val = left.removeLast();
+        }
+
+        balance();
+        return val;
     }
 }
 
